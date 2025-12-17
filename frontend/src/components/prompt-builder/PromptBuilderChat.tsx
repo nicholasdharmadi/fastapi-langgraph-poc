@@ -30,8 +30,6 @@ export function PromptBuilderChat({
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [draftPrompt, setDraftPrompt] = useState("");
-  const [promptName, setPromptName] = useState("");
-  const [showNameInput, setShowNameInput] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Start session on mount
@@ -121,7 +119,7 @@ export function PromptBuilderChat({
               const data = JSON.parse(line.slice(6));
 
               if (data.done) {
-                // Final update with parsed message and draft
+                // Final update with parsed message and draft (only update draft when complete)
                 setMessages((prev) => {
                   const updated = [...prev];
                   updated[streamingMessageIndex] = {
@@ -131,6 +129,7 @@ export function PromptBuilderChat({
                   return updated;
                 });
 
+                // Only update draft when message is complete to prevent visual instability
                 if (data.draft_prompt) {
                   setDraftPrompt(data.draft_prompt);
                   if (onDraftUpdate) {
@@ -138,7 +137,7 @@ export function PromptBuilderChat({
                   }
                 }
               } else if (data.chunk) {
-                // Stream chunk
+                // Stream chunk (don't update draft during streaming)
                 streamedContent += data.chunk;
                 setMessages((prev) => {
                   const updated = [...prev];
@@ -173,12 +172,10 @@ export function PromptBuilderChat({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           draft_prompt: draftPrompt,
-          name: promptName || null,
         }),
       });
       const data = await res.json();
       onPromptGenerated(data);
-      setShowNameInput(false);
     } catch (error) {
       console.error("Failed to save prompt", error);
     } finally {
@@ -187,15 +184,15 @@ export function PromptBuilderChat({
   };
 
   return (
-    <Card className="h-[600px] flex flex-col shadow-lg">
-      <CardHeader className="bg-neutral-50 border-b">
-        <CardTitle className="flex items-center gap-2 text-indigo-600">
-          <SparklesIcon className="h-5 w-5" />
+    <Card className="h-[600px] flex flex-col shadow-sm border border-neutral-200">
+      <CardHeader className="border-b border-neutral-200 bg-white">
+        <CardTitle className="flex items-center gap-2 text-neutral-900 text-lg font-semibold">
+          <SparklesIcon className="h-5 w-5 text-neutral-600" />
           Interactive Prompt Builder
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 overflow-hidden p-0 bg-white">
-        <div className="h-full overflow-y-auto p-4 space-y-4">
+      <CardContent className="flex-1 overflow-hidden p-0 bg-neutral-50">
+        <div className="h-full overflow-y-auto p-4 space-y-3">
           {messages.map((msg, i) => (
             <div
               key={i}
@@ -206,40 +203,35 @@ export function PromptBuilderChat({
             >
               <div
                 className={cn(
-                  "max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm",
+                  "max-w-[80%] rounded-lg px-4 py-2.5 text-sm",
                   msg.role === "user"
-                    ? "bg-indigo-600 text-white rounded-br-none"
-                    : "bg-neutral-100 text-neutral-900 rounded-bl-none"
+                    ? "bg-neutral-900 text-white"
+                    : "bg-white text-neutral-900 border border-neutral-200 shadow-sm"
                 )}
               >
-                <p className="whitespace-pre-wrap">{msg.content}</p>
+                {msg.content || (
+                  <div className="flex gap-1">
+                    <span className="animate-pulse text-neutral-400">●</span>
+                    <span className="animate-pulse delay-100 text-neutral-400">
+                      ●
+                    </span>
+                    <span className="animate-pulse delay-200 text-neutral-400">
+                      ●
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           ))}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-neutral-100 rounded-2xl rounded-bl-none px-4 py-3">
-                <div className="flex gap-1">
-                  <span className="animate-bounce text-neutral-400">●</span>
-                  <span className="animate-bounce delay-100 text-neutral-400">
-                    ●
-                  </span>
-                  <span className="animate-bounce delay-200 text-neutral-400">
-                    ●
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
           <div ref={scrollRef} />
         </div>
       </CardContent>
-      <CardFooter className="p-4 border-t gap-2 bg-neutral-50">
+      <CardFooter className="p-4 border-t border-neutral-200 gap-2 bg-white">
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Type your answer..."
+          placeholder="Describe your prompt requirements..."
           disabled={isLoading}
           className="bg-white"
         />
@@ -247,12 +239,13 @@ export function PromptBuilderChat({
           onClick={sendMessage}
           disabled={isLoading || !inputValue.trim()}
           size="icon"
+          className="bg-neutral-900 hover:bg-neutral-800"
         >
           <PaperAirplaneIcon className="h-4 w-4" />
         </Button>
         <Button
-          variant="default"
-          className="bg-green-600 hover:bg-green-700 ml-2"
+          variant="outline"
+          className="border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white"
           onClick={handleSave}
           disabled={isLoading || !draftPrompt}
         >

@@ -115,14 +115,14 @@ export default function PromptBuilderPage() {
   const getStatusIcon = (status: Recording["status"]) => {
     switch (status) {
       case "completed":
-        return <CheckCircleIcon className="h-5 w-5 text-green-600" />;
+        return <CheckCircleIcon className="h-5 w-5 text-neutral-900" />;
       case "failed":
-        return <XCircleIcon className="h-5 w-5 text-red-600" />;
+        return <XCircleIcon className="h-5 w-5 text-neutral-500" />;
       case "transcribing":
       case "analyzing":
-        return <ClockIcon className="h-5 w-5 text-blue-600 animate-spin" />;
+        return <ClockIcon className="h-5 w-5 text-neutral-600 animate-spin" />;
       default:
-        return <ClockIcon className="h-5 w-5 text-gray-400" />;
+        return <ClockIcon className="h-5 w-5 text-neutral-400" />;
     }
   };
 
@@ -157,7 +157,7 @@ export default function PromptBuilderPage() {
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-all",
               mode === "recording"
-                ? "bg-white shadow text-blue-600"
+                ? "bg-neutral-900 text-white shadow"
                 : "text-neutral-600 hover:text-neutral-900"
             )}
           >
@@ -171,7 +171,7 @@ export default function PromptBuilderPage() {
             className={cn(
               "px-4 py-2 rounded-md text-sm font-medium transition-all",
               mode === "chat"
-                ? "bg-white shadow text-indigo-600"
+                ? "bg-neutral-900 text-white shadow"
                 : "text-neutral-600 hover:text-neutral-900"
             )}
           >
@@ -198,8 +198,8 @@ export default function PromptBuilderPage() {
                 className={cn(
                   "inline-flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all",
                   uploading
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg hover:shadow-xl"
+                    ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+                    : "bg-neutral-900 text-white hover:bg-neutral-800 shadow-sm"
                 )}
               >
                 <CloudArrowUpIcon className="h-5 w-5" />
@@ -230,7 +230,8 @@ export default function PromptBuilderPage() {
                       onClick={() => setSelectedRecording(recording.id)}
                       className={cn(
                         "w-full p-4 text-left hover:bg-neutral-50 transition-colors",
-                        selectedRecording === recording.id && "bg-blue-50"
+                        selectedRecording === recording.id &&
+                          "bg-neutral-100 border-l-2 border-neutral-900"
                       )}
                     >
                       <div className="flex items-start justify-between gap-2">
@@ -279,7 +280,7 @@ export default function PromptBuilderPage() {
                   {recordingDetail.analysis && (
                     <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6">
                       <h3 className="text-lg font-semibold text-neutral-900 mb-4 flex items-center gap-2">
-                        <SparklesIcon className="h-5 w-5 text-purple-600" />
+                        <SparklesIcon className="h-5 w-5 text-neutral-600" />
                         Analysis Results
                       </h3>
 
@@ -306,7 +307,7 @@ export default function PromptBuilderPage() {
                               ).map(([key, value]) => (
                                 <span
                                   key={key}
-                                  className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"
+                                  className="px-3 py-1 bg-neutral-900 text-white rounded-full text-sm"
                                 >
                                   {key}: {value as string}
                                 </span>
@@ -326,7 +327,7 @@ export default function PromptBuilderPage() {
                                 (phrase, idx) => (
                                   <span
                                     key={idx}
-                                    className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm"
+                                    className="px-3 py-1 bg-neutral-100 text-neutral-900 border border-neutral-300 rounded-full text-sm"
                                   >
                                     {phrase}
                                   </span>
@@ -387,7 +388,7 @@ export default function PromptBuilderPage() {
                             className={cn(
                               "p-4 rounded-lg border-2",
                               prompt.is_active
-                                ? "border-blue-500 bg-blue-50"
+                                ? "border-neutral-900 bg-neutral-50"
                                 : "border-neutral-200 bg-white"
                             )}
                           >
@@ -397,7 +398,7 @@ export default function PromptBuilderPage() {
                                   Version {prompt.version}
                                 </span>
                                 {prompt.is_active && (
-                                  <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">
+                                  <span className="px-2 py-1 bg-neutral-900 text-white text-xs rounded-full">
                                     Active
                                   </span>
                                 )}
@@ -432,7 +433,7 @@ export default function PromptBuilderPage() {
           {generatedPrompt ? (
             <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6 flex flex-col h-[600px]">
               <h3 className="text-lg font-semibold text-neutral-900 mb-4 flex items-center gap-2">
-                <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                <CheckCircleIcon className="h-5 w-5 text-neutral-900" />
                 Generated Prompt
               </h3>
               <div className="flex-1 overflow-y-auto bg-neutral-900 text-neutral-100 p-4 rounded-lg font-mono text-sm whitespace-pre-wrap">
@@ -442,7 +443,7 @@ export default function PromptBuilderPage() {
           ) : draftPrompt ? (
             <div className="bg-white rounded-lg shadow-sm border border-neutral-200 p-6 flex flex-col h-[600px]">
               <h3 className="text-lg font-semibold text-neutral-900 mb-4 flex items-center gap-2">
-                <DocumentTextIcon className="h-5 w-5 text-blue-600" />
+                <DocumentTextIcon className="h-5 w-5 text-neutral-600" />
                 Live Prompt Draft
               </h3>
               <div className="flex-1 overflow-y-auto bg-neutral-50 text-neutral-800 p-4 rounded-lg font-mono text-sm whitespace-pre-wrap border border-neutral-200">
